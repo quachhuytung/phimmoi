@@ -13,7 +13,7 @@ BOT_NAME = 'phimmoi'
 
 SPIDER_MODULES = ['phimmoi.spiders']
 NEWSPIDER_MODULE = 'phimmoi.spiders'
-
+SPLASH_URL = 'http://localhost:8050'
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'phimmoi (+http://www.yourdomain.com)'
@@ -50,11 +50,19 @@ ROBOTSTXT_OBEY = True
 #    'phimmoi.middlewares.PhimmoiSpiderMiddleware': 543,
 #}
 
+SPIDER_MIDDLEWARES = {
+    'scrapy_splash.SplashDeduplicateArgsMiddleware': 100,
+}
 # Enable or disable downloader middlewares
 # See https://doc.scrapy.org/en/latest/topics/downloader-middleware.html
 #DOWNLOADER_MIDDLEWARES = {
 #    'phimmoi.middlewares.PhimmoiDownloaderMiddleware': 543,
 #}
+DOWNLOADER_MIDDLEWARES = {
+    'scrapy_splash.SplashCookiesMiddleware': 723,
+    'scrapy_splash.SplashMiddleware': 725,
+    'scrapy.downloadermiddlewares.httpcompression.HttpCompressionMiddleware': 810,
+}
 
 # Enable or disable extensions
 # See https://doc.scrapy.org/en/latest/topics/extensions.html
@@ -74,6 +82,9 @@ ITEM_PIPELINES = {
    'phimmoi.pipelines.ResolutionProcessorPipeline': 700,
    'phimmoi.pipelines.GenresProcessorPipeline': 800,
    'phimmoi.pipelines.ActorsProcessorPipeline': 900,
+   'phimmoi.pipelines.DescriptionProcessorPipeline': 1000,
+
+
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)
