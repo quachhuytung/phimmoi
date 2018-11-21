@@ -17,15 +17,17 @@ class PhimLeSpider(scrapy.Spider):
     def parse_list_film(self, response):
         for item_link in LinkExtractor(restrict_xpaths="//ul[@class='list-movie']").extract_links(response):
             yield SplashRequest(url=item_link.url, callback=self.parse_info)
-
-        next_page = response.xpath('/html/body/div[3]/div[7]/div[1]/ul/li[3]/a/@href').extract_first()
-        if next_page:
-            yield response.follow(next_page, callback=self.parse_list_film)
+        next_page = response.xpath('//ul[@class="pagination pagination-lg"]/li/child::a')[-1]
+        if 'Trang kế' in next_page.xpath('./text()').extract_first():
+            yield response.follow(next_page.xpath('./@href').extract_first(), callback=self.parse_list_film)
+   
     def parse_info(self, response):
         item = dict()
+        item['id'] = response.url
         item['name'] = response.xpath('//a[@class="title-1"]/text()').extract_first()
         item['alter_name'] = response.xpath('//span[@class="title-2"]/text()').extract_first()
-        item['img'] = response.xpath('//div[@class="movie-l-img"]/img/@src').extract_first()
+        item['poster'] = response.xpath('//div[@class="movie-l-img"]/img/@src').extract_first()
+        item['img'] = response.xpath('//*[@id="film-content"]//img/@src').extract_first()
 
         info_key = response.xpath('//dl[@class="movie-dl"]/dt').extract()
         info_val = response.xpath('//dl[@class="movie-dl"]/dd').extract()

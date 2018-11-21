@@ -22,12 +22,12 @@ SPLASH_URL = 'http://localhost:8050'
 ROBOTSTXT_OBEY = True
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
-#CONCURRENT_REQUESTS = 32
+CONCURRENT_REQUESTS = 4
 
 # Configure a delay for requests for the same website (default: 0)
 # See https://doc.scrapy.org/en/latest/topics/settings.html#download-delay
 # See also autothrottle settings and docs
-#DOWNLOAD_DELAY = 3
+DOWNLOAD_DELAY = 1.5
 # The download delay setting will honor only one of:
 #CONCURRENT_REQUESTS_PER_DOMAIN = 16
 #CONCURRENT_REQUESTS_PER_IP = 16
@@ -75,21 +75,21 @@ DOWNLOADER_MIDDLEWARES = {
 ITEM_PIPELINES = {
    'phimmoi.pipelines.StripKeyPipeline': 100,
    'phimmoi.pipelines.FilterDataAttributePipeline': 200,
-   'phimmoi.pipelines.ImdbProcessorPipeline': 300,
-   'phimmoi.pipelines.DirectorProcessorPipeline': 400,
-   'phimmoi.pipelines.CountryProcessorPipeline': 500,
-   'phimmoi.pipelines.YearProcessorPipeline': 600,
-   'phimmoi.pipelines.ResolutionProcessorPipeline': 700,
-   'phimmoi.pipelines.GenresProcessorPipeline': 800,
-   'phimmoi.pipelines.ActorsProcessorPipeline': 900,
-   'phimmoi.pipelines.DescriptionProcessorPipeline': 1000,
-
+   'phimmoi.pipelines.DirectorProcessorPipeline': 300,
+   'phimmoi.pipelines.CountryProcessorPipeline': 400,
+   'phimmoi.pipelines.YearProcessorPipeline': 500,
+   'phimmoi.pipelines.ResolutionProcessorPipeline': 600,
+   'phimmoi.pipelines.GenresProcessorPipeline': 700,
+   'phimmoi.pipelines.ActorsProcessorPipeline': 800,
+   'phimmoi.pipelines.DescriptionProcessorPipeline': 900,
+   'phimmoi.pipelines.IdProcessorPipeline': 950,
+   'phimmoi.pipelines.JsonWriterPipeline': 1000,
 
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://doc.scrapy.org/en/latest/topics/autothrottle.html
-#AUTOTHROTTLE_ENABLED = True
+AUTOTHROTTLE_ENABLED = True
 # The initial download delay
 #AUTOTHROTTLE_START_DELAY = 5
 # The maximum download delay to be set in case of high latencies

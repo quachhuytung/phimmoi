@@ -11,51 +11,45 @@ import re
 import lxml.html
 import codecs
 import json
+from scrapy.exceptions import DropItem
 
 pattern = re.compile(r'\d+')
+film_id_pattern = re.compile(r'(?<=\-)(\d+)(?=\/)')
 
 def filter_id(s):
     return pattern.search(s).group()
+
+def filter_film_id(s):
+    return film_id_pattern.search(s).group()
 
 class StripKeyPipeline(object):
     def process_item(self, item, spider):
         itm = dict()
         for key, val in item.items():
             itm[BeautifulSoup(key, "html.parser").get_text()] = val
+        if item['name'] is None:
+            raise DropItem("Missing information in %s" % item)
         return itm
 
 class FilterDataAttributePipeline(object):
     def process_item(self, item, spider):
         itm = dict()
         attribs = [
-            'name', 'alter_name', 'img', 'Điểm IMDb:', 'Đạo diễn:', 'Quốc gia:', 'Năm:', 'Độ phân giải:',
+            'id', 'name', 'alter_name', 'poster', 'img', 'Đạo diễn:', 'Quốc gia:', 'Năm:', 'Độ phân giải:',
             'Thể loại:', 'actors', 'description', 'trailer',
         ]
         for attrib in attribs:
-            try:
-                itm[attrib] = item[attrib]
-            except:
-                pass
+            itm[attrib] = item[attrib]
         return itm
 
-class ImdbProcessorPipeline(object):
-    def process_item(self, item, spider):
-        try:
-            item['Điểm IMDb:'] = BeautifulSoup(item['Điểm IMDb:'], "html.parser").get_text()
-        except:
-            pass
-        return item
 class DirectorProcessorPipeline(object):
     def process_item(self, item, spider):
-        try:
-            director_info = item['Đạo diễn:']
-            item['Đạo diễn:'] = dict()
-            for director in lxml.html.fromstring(director_info).getchildren():
-                director_id = filter_id(director.attrib['href'])
-                director_name = director.text_content()
-                item['Đạo diễn:'].update({director_id: director_name})
-        except:
-            pdb.set_trace()
+        director_info = item['Đạo diễn:']
+        item['Đạo diễn:'] = dict()
+        for director in lxml.html.fromstring(director_info).getchildren():
+            director_id = filter_id(director.attrib['href'])
+            director_name = director.text_content()
+            item['Đạo diễn:'].update({director_id: director_name})
         return item
 
 class CountryProcessorPipeline(object):
@@ -98,10 +92,14 @@ class DescriptionProcessorPipeline(object):
         description = " ".join(BeautifulSoup(item['description'], "html.parser").get_text().split())
         item['description'] = description
         return item
+class IdProcessorPipeline(object):
+    def process_item(self, item, spider):
+        item['id'] = filter_film_id(item['id'])
+        return item
 
 class JsonWriterPipeline(object):
   def open_spider(self, spider):
-    self.file = codecs.open('claudebernard-aquarider.jl', 'w', encoding='utf-8')
+    self.file = codecs.open('items.jl', 'w', encoding='utf-8')
 
   def close_spider(self, spider):
     self.file.close()
