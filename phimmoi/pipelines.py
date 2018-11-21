@@ -92,6 +92,7 @@ class DescriptionProcessorPipeline(object):
         description = " ".join(BeautifulSoup(item['description'], "html.parser").get_text().split())
         item['description'] = description
         return item
+
 class IdProcessorPipeline(object):
     def process_item(self, item, spider):
         item['id'] = filter_film_id(item['id'])
@@ -105,6 +106,6 @@ class JsonWriterPipeline(object):
     self.file.close()
 
   def process_item(self, item, spider):
-    line = json.dumps(dict(item), ensure_ascii=False) + ",\n"
+    line = json.dumps(dict(item), ensure_ascii=False) + "\n"
     self.file.write(line)
     return item
