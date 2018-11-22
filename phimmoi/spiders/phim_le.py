@@ -17,9 +17,11 @@ class PhimLeSpider(scrapy.Spider):
     def parse_list_film(self, response):
         for item_link in LinkExtractor(restrict_xpaths="//ul[@class='list-movie']").extract_links(response):
             yield SplashRequest(url=item_link.url, callback=self.parse_info)
-        next_page = response.xpath('//ul[@class="pagination pagination-lg"]/li/child::a')[-1]
-        if 'Trang kế' in next_page.xpath('./text()').extract_first():
-            yield response.follow(next_page.xpath('./@href').extract_first(), callback=self.parse_list_film)
+        current_page_num = response.meta.get('page')
+        current_page = 1 if current_page_num is None else current_page_num
+        next_page_link = 'http://www.phimmoi.net/phim-le/page-{}.html'.format(current_page+1)
+        if current_page <= 137:
+            yield scrapy.Request(url=next_page_link, callback=self.parse_list_film, meta={'page': current_page+1})
    
     def parse_info(self, response):
         item = dict()
