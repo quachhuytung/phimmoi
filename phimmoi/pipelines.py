@@ -36,7 +36,7 @@ class FilterDataAttributePipeline(object):
         itm = dict()
         attribs = [
             'id', 'name', 'alter_name', 'poster', 'img', 'Đạo diễn:', 'Quốc gia:', 'Năm:', 'Độ phân giải:',
-            'Thể loại:', 'actors', 'description', 'trailer',
+            'Thể loại:', 'actors', 'description', 'trailer', 'link'
         ]
         for attrib in attribs:
             itm[attrib] = item[attrib]
