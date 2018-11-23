@@ -56,7 +56,7 @@ class PhimLeSpider(scrapy.Spider):
                 splash.html5_media_enabled = true
                 splash.private_mode_enabled = false
                 assert(splash:go(splash.args.url))
-                assert(splash:wait(1))
+                assert(splash:wait(3))
                 return splash:html()
                 end
             """
