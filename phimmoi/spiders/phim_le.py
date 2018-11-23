@@ -16,12 +16,22 @@ class PhimLeSpider(scrapy.Spider):
             yield scrapy.Request(url=url, callback=self.parse_list_film)
     def parse_list_film(self, response):
         for item_link in LinkExtractor(restrict_xpaths="//ul[@class='list-movie']").extract_links(response):
-            yield SplashRequest(url=item_link.url, callback=self.parse_info)
-        #current_page_num = response.meta.get('page')
-        #current_page = 1 if current_page_num is None else current_page_num
-        #next_page_link = 'http://www.phimmoi.net/phim-le/page-{}.html'.format(current_page+1)
-        #if current_page <= 137:
-        #    yield scrapy.Request(url=next_page_link, callback=self.parse_list_film, meta={'page': current_page+1})
+            #yield SplashRequest(url=item_link.url, callback=self.parse_info)
+            script = """
+            function main(splash)
+            splash.html5_media_enabled = true
+            splash.private_mode_enabled = false
+            assert(splash:go(splash.args.url))
+            return splash:html()
+            end
+            """
+            yield SplashRequest(url=item_link.url, callback=self.parse_info, endpoint='execute',
+                args={'lua_source': script, 'timeout': 180})
+        current_page_num = response.meta.get('page')
+        current_page = 1 if current_page_num is None else current_page_num
+        next_page_link = 'http://www.phimmoi.net/phim-le/page-{}.html'.format(current_page+1)
+        if current_page <= 137:
+            yield scrapy.Request(url=next_page_link, callback=self.parse_list_film, meta={'page': current_page+1})
    
     def parse_info(self, response):
         item = dict()
@@ -46,12 +56,12 @@ class PhimLeSpider(scrapy.Spider):
                 splash.html5_media_enabled = true
                 splash.private_mode_enabled = false
                 assert(splash:go(splash.args.url))
-                assert(splash:wait(3))
+                assert(splash:wait(1))
                 return splash:html()
                 end
             """
             yield SplashRequest(url=watch_url, callback=self.parse_link_film, endpoint='execute',
-                            args={'lua_source': script, 'timeout': 3600 }, meta={"item": item})
+                            args={'lua_source': script,'timeout': 180}, meta={"item": item})
     
     def parse_link_film(self, response):
         item = response.meta['item']
