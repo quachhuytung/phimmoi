@@ -36,7 +36,7 @@ class FilterDataAttributePipeline(object):
         itm = dict()
         attribs = [
             'id', 'name', 'alter_name', 'poster', 'img', 'Đạo diễn:', 'Quốc gia:', 'Năm:', 'Độ phân giải:',
-            'Thể loại:', 'actors', 'description', 'link', #'trailer'
+            'Thể loại:', 'actors', 'description'
         ]
         for attrib in attribs:
             itm[attrib] = item[attrib]
@@ -97,6 +97,18 @@ class IdProcessorPipeline(object):
     def process_item(self, item, spider):
         item['id'] = filter_film_id(item['id'])
         return item
+
+class LinkAdditionPipeline(object):
+    def process_item(self, item, spider):
+        item['link'] = "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4"
+        return item
+
+class TrailerAdditionPipeline(object):
+    def process_item(self, item, spider):
+        item['trailer'] = "https://www.youtube.com/embed/9xwazD5SyVg"
+        return item
+
+
 
 class JsonWriterPipeline(object):
   def open_spider(self, spider):

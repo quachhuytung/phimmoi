@@ -82,6 +82,8 @@ ITEM_PIPELINES = {
    'phimmoi.pipelines.ActorsProcessorPipeline': 800,
    'phimmoi.pipelines.DescriptionProcessorPipeline': 900,
    'phimmoi.pipelines.IdProcessorPipeline': 950,
+   'phimmoi.pipelines.LinkAdditionPipeline': 960,
+   'phimmoi.pipelines.TrailerAdditionPipeline': 970,
    'phimmoi.pipelines.JsonWriterPipeline': 1000,
 
 }
